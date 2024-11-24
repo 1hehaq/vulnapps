@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="jumbotron">
+   <h1 class="display-4">Welcome to SSTI Test App</h1>
+   <p class="lead">This application is intentionally vulnerable to Server-Side Template Injection attacks.</p>
+   <hr class="my-4">
+   <p>Use it to test SSTI detection and exploitation tools.</p>
+   {% if not session.username %}
+       <a class="btn btn-primary btn-lg" href="{{ url_for('register') }}" role="button">Get Started</a>
+   {% endif %}
+</div>
+{% endblock %}

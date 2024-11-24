@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+   <div class="col-md-8">
+       <div class="card">
+           <div class="card-header">Create New Post</div>
+           <div class="card-body">
+               <form method="POST">
+                   <div class="mb-3">
+                       <label for="title" class="form-label">Title</label>
+                       <input type="text" class="form-control" id="title" name="title" required>
+                   </div>
+                   <div class="mb-3">
+                       <label for="content" class="form-label">Content</label>
+                       <textarea class="form-control" id="content" name="content" rows="5" required></textarea>
+                   </div>
+                   <div class="mb-3">
+                       <label for="template" class="form-label">Custom Template (Optional)</label>
+                       <textarea class="form-control" id="template" name="template" rows="3"></textarea>
+                       <small class="text-muted">You can customize how your post appears using Jinja2 templates</small>
+                   </div>
+                   <button type="button" class="btn btn-secondary" onclick="previewTemplate()">Preview Template</button>
+                   <button type="submit" class="btn btn-primary">Create Post</button>
+               </form>
+               <div id="preview" class="mt-3"></div>
+           </div>
+       </div>
+   </div>
+</div>
+<script>
+function previewTemplate() {
+   fetch('{{ url_for("preview_template") }}', {
+       method: 'POST',
+       body: new FormData(document.querySelector('form'))
+   })
+   .then(response => response.text())
+   .then(html => {
+       document.getElementById('preview').innerHTML = html;
+   });
+}
+</script>
+{% endblock %}
