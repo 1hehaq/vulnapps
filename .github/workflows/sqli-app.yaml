@@ -1,0 +1,93 @@
+name: Deploy SQLi Vulnerable App
+
+on:
+  workflow_dispatch:
+    inputs:
+      timeout_hours:
+        description: 'How many hours to keep the app running'
+        required: true
+        default: '2'
+        type: choice
+        options:
+          - '1'
+          - '2'
+          - '3'
+          - '6'
+
+jobs:
+  deploy-sqli-app:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Setup database and static files
+        run: |
+          mkdir -p static/uploads
+          touch static/uploads/dummy.png
+          python -c "import app; app.init_db()"
+      
+      - name: Start Flask app in background
+        run: |
+          nohup python app.py > flask.log 2>&1 &
+          echo "Flask app started on localhost:5000"
+          sleep 5  # Give Flask time to start
+      
+      - name: Start ngrok tunnel
+        id: ngrok
+        uses: ngrok/ngrok-action@v1
+        with:
+          authtoken: ${{ secrets.NGROK_AUTH_TOKEN }}
+          port: 5000
+          tunnelName: sqlitunnel
+      
+      - name: Send URL to Discord
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          NGROK_URL: ${{ steps.ngrok.outputs.url }}
+        run: |
+          PAYLOAD='{
+            "embeds": [{
+              "title": "Vulnerable App Deployed",
+              "description":• "SQLi vulnapp is now available online!",
+              "color": 5814783,
+              "fields": [
+                {
+                  "name": "Public URL",
+                  "value": "'"$NGROK_URL"'",
+                  "inline": false
+                },
+                {
+                  "name": "Default Credentials",
+                  "value": "Username: `admin`\nPassword: `admin123`",
+                  "inline": false
+                },
+                {
+                  "name": "SQL Injection Examples",
+                  "value": "- Login bypass: `admin\' --`\n- Fetch users: `/search?q=\' UNION SELECT id, username, password, \'dummy.png\', 1 FROM users--`\n- Break auth: `/?category=X\' OR 1=1--`",
+                  "inline": false
+                }
+              ],
+              "footer": {
+                "text": "Session will remain active for ${{ github.event.inputs.timeout_hours }} hours"
+              }
+            }]
+          }'
+          
+          curl -X POST -H "Content-Type: application/json" -d "$PAYLOAD" $DISCORD_WEBHOOK
+      
+      - name: Keep alive
+        run: |
+          TIMEOUT_SECS=$(( ${{ github.event.inputs.timeout_hours }} * 3600 ))
+          echo "App will remain active for ${{ github.event.inputs.timeout_hours }} hours"
+          sleep $TIMEOUT_SECS 
