@@ -44,22 +44,29 @@ jobs:
           sleep 5  # Give Flask time to start
       
       - name: Start ngrok tunnel
-        id: ngrok
-        uses: ngrok/ngrok-action@v1
+        uses: luisboto/ngrok-tunnel-action@v0.1.7.2
         with:
-          authtoken: ${{ secrets.NGROK_AUTH_TOKEN }}
+          timeout: ${{ github.event.inputs.timeout_hours }}h
           port: 5000
-          tunnelName: sqlitunnel
+          ngrok_authtoken: ${{ secrets.NGROK_AUTH_TOKEN }}
+          tunnel_type: http
+          save_url_to_filename: ngrok_url.txt
+      
+      - name: Get ngrok URL
+        id: ngrok_url
+        run: |
+          NGROK_URL=$(cat ngrok_url.txt)
+          echo "NGROK_URL=$NGROK_URL" >> $GITHUB_ENV
+          echo "Ngrok URL: $NGROK_URL"
       
       - name: Send URL to Discord
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-          NGROK_URL: ${{ steps.ngrok.outputs.url }}
         run: |
           PAYLOAD='{
             "embeds": [{
               "title": "Vulnerable App Deployed",
-              "description":• "SQLi vulnapp is now available online!",
+              "description": "SQLi vulnapp is now available online!",
               "color": 5814783,
               "fields": [
                 {
