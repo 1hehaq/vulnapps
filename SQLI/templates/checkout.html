@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout - TechGadgets{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 mb-5">
+                <div class="card-body p-5 text-center">
+                    <i class="fas fa-check-circle text-success fa-5x mb-4"></i>
+                    <h2 class="mb-4">Thank You for Your Order!</h2>
+                    <p class="lead mb-4">Your order has been placed successfully and is being processed.</p>
+                    <p class="mb-4">Order number: <strong>#{{ ''.join(range(1000, 9999)|map('string')|random) }}</strong></p>
+                    <p>You will receive an email confirmation shortly at {{ username }}@example.com</p>
+                    <hr class="my-4">
+                    <div class="mb-4">
+                        <h5 class="mb-3">What happens next?</h5>
+                        <div class="row mt-4">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <i class="fas fa-box-open fa-2x mb-3 text-primary"></i>
+                                    <h6>Order Processing</h6>
+                                    <p class="small text-muted">We're preparing your order for shipment</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <i class="fas fa-shipping-fast fa-2x mb-3 text-primary"></i>
+                                    <h6>On the Way</h6>
+                                    <p class="small text-muted">Your order will be shipped within 24 hours</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <i class="fas fa-home fa-2x mb-3 text-primary"></i>
+                                    <h6>Delivery</h6>
+                                    <p class="small text-muted">Expected delivery within 3-5 business days</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2 d-md-block">
+                        <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg px-5">
+                            <i class="fas fa-home me-2"></i>Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <h4 class="mb-4">Recommended Products</h4>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <img src="{{ url_for('static', filename='uploads/dummy.png') }}" class="card-img-top" alt="Sony Headphones">
+                                <div class="card-body">
+                                    <h6 class="card-title">Sony WH-1000XM5</h6>
+                                    <p class="price mb-0">$349.99</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <img src="{{ url_for('static', filename='uploads/dummy.png') }}" class="card-img-top" alt="iPad Pro">
+                                <div class="card-body">
+                                    <h6 class="card-title">iPad Pro</h6>
+                                    <p class="price mb-0">$1099.99</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <img src="{{ url_for('static', filename='uploads/dummy.png') }}" class="card-img-top" alt="Bose Earbuds">
+                                <div class="card-body">
+                                    <h6 class="card-title">Bose QuietComfort Earbuds</h6>
+                                    <p class="price mb-0">$279.99</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
